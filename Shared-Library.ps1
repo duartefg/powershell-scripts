@@ -1,153 +1,82 @@
-<#
-function Verb-Noun {
-#
-    .Synopsis
-    Short description
-
-    .DESCRIPTION
-    Long description
-
-    .EXAMPLE
-    Example of how to use this cmdlet
-
-    .EXAMPLE
-    Another example of how to use this cmdlet
-
-    .INPUTS
-    Inputs to this cmdlet (if any)
-
-    .OUTPUTS
-    Output from this cmdlet (if any)
-
-    .NOTES
-    General notes
-        
-    .COMPONENT
-    The component this cmdlet belongs to
-
-    .ROLE
-    The role this cmdlet belongs to
-        
-    .FUNCTIONALITY
-    The functionality that best describes this cmdlet
-#
-
-    [CmdletBinding()]
-    [OutputType([])]
-
-    Param (
-        # Param1 help description
-        [Parameter(Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false,
-            ValueFromRemainingArguments=$false,
-            ValueFromRemainingArguments=$false,
-            HelpMessage="")]
-        [ValidateSet("sun","moon","earth")]
-        [string]
-        $Param1,
-
-        # Param2 help description
-        [Parameter(Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false,
-            ValueFromRemainingArguments=$false,
-            HelpMessage="")]
-        [ValidateSet("sun","moon","earth")]
-        [STRING]
-        $Param2
-    )
-
-    Begin {
-    }
-
-    Process {
-    }
-    
-    End{
-    }
-}
-#>
-
 Function Write-Log {
     <#
         .Synopsis
-        Short description
+        Write logs file entries using Configuration Manager formatting.
 
         .DESCRIPTION
-        Long description
-
-        .EXAMPLE
-        Example of how to use this cmdlet
-
-        .EXAMPLE
-        Another example of how to use this cmdlet
+        Internal function used to create and append a target log file
+        to record informational, warning, and error entries. This
+        function is used by Write-LogMessage which is written to 
+        ingest Error Record and Invocation Information PowerShell
+        objects and dynamically generate log messages which are then
+        passed to this function (Write-Log).
 
         .INPUTS
-        Inputs to this cmdlet (if any)
+        None
 
         .OUTPUTS
-        Output from this cmdlet (if any)
+        None
 
         .NOTES
-        General notes
+        None
         
         .COMPONENT
-        The component this cmdlet belongs to
+        Shared-Library
 
         .ROLE
-        The role this cmdlet belongs to
+        Logging
         
         .FUNCTIONALITY
-        The functionality that best describes this cmdlet
+        Log handling
     #>
     
     [CmdletBinding()]
 
     Param (
         
-        # Message help description
+        # Message String message to log
         [Parameter(Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false,
             ValueFromRemainingArguments=$false,
-            HelpMessage="")]
+            HelpMessage="Message to log")]
         [string]
         $Message,
 
-        # Component help description
+        # Component Originating component source
         [Parameter(Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false,
             ValueFromRemainingArguments=$false,
-            HelpMessage="")]
+            HelpMessage="Component source")]
         [String]
         $Component,
 
-        # Type help description
+        # Type of message to log (Information, Warning, and Error)
         [Parameter(Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false,
             ValueFromRemainingArguments=$false,
-            HelpMessage="")]
+            HelpMessage="Message type (Info,Warning,Error")]
+        [ValidateSet(1,2,3)]
         [String]
         $Type,
 
-        # Thread help description
+        # Thread source for log entry
         [Parameter(Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false,
             ValueFromRemainingArguments=$false,
-            HelpMessage="")]
+            HelpMessage="Thread source")]
         [string]
         $Thread,
 
-        # File help description
+        # Source file name and process ID
         [Parameter(Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false,
             ValueFromRemainingArguments=$false,
-            HelpMessage="")]
+            HelpMessage="File source")]
         [String]
         $File
 	)
@@ -178,33 +107,37 @@ function Write-LogMessage {
         passed as parameters to Write-Log. 
 
         .EXAMPLE
-        Example of how to use this cmdlet
+        Write-LogMessage -Message "Information log message" -Invocation $MyInvocation
 
         .EXAMPLE
-        Another example of how to use this cmdlet
+        Write-LogMessage -Message "Warning log message" -Invocation $MyInvocation -Severity Warning
+
+        .EXAMPLE
+        Write-LogMessage -Message "Error log message" -Invocation $MyInvocation -Exception $_ -Severity Error
 
         .INPUTS
-        Inputs to this cmdlet (if any)
+        None
 
         .OUTPUTS
-        Output from this cmdlet (if any)
+        None
 
         .NOTES
-        General notes
+        None
         
         .COMPONENT
-        The component this cmdlet belongs to
+        Shared Library
 
         .ROLE
-        The role this cmdlet belongs to
+        Logging
         
         .FUNCTIONALITY
-        The functionality that best describes this cmdlet
+        Error Handling
     #>
 
     [CmdletBinding()]
     param (
-
+        
+        # Message to log
         [Parameter(
             Mandatory,
             ValueFromPipeline=$false,
@@ -214,6 +147,7 @@ function Write-LogMessage {
         [string]
         $Message,
 
+        # Invocation object to process
         [Parameter(
              Mandatory,
             ValueFromPipeline=$false,
@@ -223,6 +157,7 @@ function Write-LogMessage {
         [System.Management.Automation.InvocationInfo]
         $Invocation,
 
+        # Exception object to process
         [Parameter(
             Mandatory=$false,
             ValueFromPipeline=$false,
@@ -232,18 +167,19 @@ function Write-LogMessage {
         [System.Management.Automation.ErrorRecord]
         $Exception,
 
+        # Severity of the log entry (Information, Warning, Error)
         [Parameter(
             Mandatory = $false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false
-        )]
+            ValueFromRemainingArguments=$false,
+            HelpMessage="")]
         [ValidateSet('Information','Warning','Error')]
         [string]
         $Severity
     )
 
-    begin {
+    Begin {
         # Initialize Messages array
         [array]  $local:Messages = @()
 
@@ -269,7 +205,7 @@ function Write-LogMessage {
         [string] $local:Trace = [string]::Empty
     }
 
-    process {
+    Process {
         # Convert Severity string to Type integer
         switch ($Severity) {
             'Information' {
@@ -338,7 +274,36 @@ function Write-LogMessage {
     }
 }
 
-Function Set-Reg {
+Function Set-RegistryKeyValue {
+    <#
+        .Synopsis
+        Creates or sets a registry key value
+
+        .DESCRIPTION
+        Creates or sets a registry key value on existing registry key path
+
+        .EXAMPLE
+        Set-RegistryKeyValue -Hive HKLM -Path 'Softare\Microsoft' -Name 'foo' -Value 'bar' -Type String
+
+        .INPUTS
+        None
+
+        .OUTPUTS
+        None
+
+        .NOTES
+        None
+        
+        .COMPONENT
+        Shared Library
+
+        .ROLE
+        Registry worker
+        
+        .FUNCTIONALITY
+        Registry
+    #>
+
     [CmdletBinding()]
     param (
         [Parameter(
@@ -389,9 +354,11 @@ Function Set-Reg {
         $Type
     )
 
-    try {
-        [void] (New-ItemProperty -Path "$Hive\$Path" -Name "$($Name)" -Value "$($Value)" -PropertyType $Type -Force -ErrorAction Stop)
-    } catch {
-        Write-LogMessage -Message "Failed to set registry key value" -Invocation $MyInvocation -Exception $_ -Severity Error
+    Process {
+        try {
+            [void] (New-ItemProperty -Path "$($Hive):\$Path" -Name "$($Name)" -Value "$($Value)" -PropertyType $Type -Force -ErrorAction Stop)
+        } catch {
+            Write-LogMessage -Message "Failed to set registry key value" -Invocation $MyInvocation -Exception $_ -Severity Error
+        }
     }
 }
