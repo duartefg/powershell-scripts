@@ -286,12 +286,7 @@ Function Invoke-SetRegKey {
         $Name,
 
         # Registry key value
-        [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Registry key value")]
+        [Parameter()]
         [String]
         $Value,
 
@@ -314,31 +309,32 @@ Function Invoke-SetRegKey {
 Function Invoke-StartProcess {
     <#
         .Synopsis
-        {todo}
+        Starts process on local device
 
         .DESCRIPTION
-        {todo}
+        Launches a process using ProcessStartInfo and Process
+        .NET libraries.
 
         .EXAMPLE
-        {todo}
+        Invoke-StartProcess -Path "notepad.exe" -Parameters "C:\HelloWorld.txt"
 
         .INPUTS
-        {todo}
+        None
 
         .OUTPUTS
-        {todo}
+        None
 
         .NOTES
-        {todo}
+        None
         
         .COMPONENT
-        {todo}
+        Shared Library
 
         .ROLE
-        {todo}
+        Start process
         
         .FUNCTIONALITY
-        {todo}
+        File system process
     #>
 
     [CmdletBinding()]    
