@@ -143,7 +143,7 @@ function Write-LogMessage {
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
             ValueFromRemainingArguments=$false,
-            HelpMessage="")]
+            HelpMessage="Message to log")]
         [string]
         $Message,
 
@@ -153,7 +153,7 @@ function Write-LogMessage {
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
             ValueFromRemainingArguments=$false,
-            HelpMessage="")]
+            HelpMessage="Invocation object to process")]
         [System.Management.Automation.InvocationInfo]
         $Invocation,
 
@@ -163,7 +163,7 @@ function Write-LogMessage {
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
             ValueFromRemainingArguments=$false,
-            HelpMessage="")]
+            HelpMessage="Exception object to process")]
         [System.Management.Automation.ErrorRecord]
         $Exception,
 
@@ -173,7 +173,7 @@ function Write-LogMessage {
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
             ValueFromRemainingArguments=$false,
-            HelpMessage="")]
+            HelpMessage="Severity of leg entry")]
         [ValidateSet('Information','Warning','Error')]
         [string]
         $Severity
@@ -306,49 +306,55 @@ Function Set-RegistryKeyValue {
 
     [CmdletBinding()]
     param (
+        
+        # Registry key hive
         [Parameter(
             Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false
-        )]
+            ValueFromRemainingArguments=$false,
+            HelpMessage="Registry key hive")]
         [ValidateSet('HKLM','HKCU','HKR','HKU')]
         [String]
         $Hive,
 
+        # Registry key path
         [Parameter(
             Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false
-        )]
+            ValueFromRemainingArguments=$false,
+            HelpMessage="Registry key path")]
         [String]
         $Path,
 
+        # Registry key name
         [Parameter(
             Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false
-        )]
+            ValueFromRemainingArguments=$false,
+            HelpMessage="Registry key name")]
         [String]
         $Name,
 
+        # Registry key value
         [Parameter(
             Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false
-        )]
+            ValueFromRemainingArguments=$false,
+            HelpMessage="Registry key value")]
         [String]
         $Value,
 
+        # Registry key value type
         [Parameter(
             Mandatory=$false,
             ValueFromPipeline=$false,
             ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false
-        )]
+            ValueFromRemainingArguments=$false,
+            HelpMessage="Registry key value type")]
         [String]
         [ValidateSet('String','ExpandString','Binary','DWord','Qword')]
         $Type
