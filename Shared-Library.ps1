@@ -35,53 +35,33 @@ Function Write-Log {
     Param (
         
         # Message String message to log
-        [Parameter(Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false,
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Message to log")]
+        [Parameter()]
         [string]
         $Message,
 
         # Component Originating component source
-        [Parameter(Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false,
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Component source")]
+        [Parameter()]
         [String]
         $Component,
 
         # Type of message to log (Information, Warning, and Error)
-        [Parameter(Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false,
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Message type (Info,Warning,Error")]
+        [Parameter()]
         [ValidateSet(1,2,3)]
         [String]
         $Type,
 
         # Thread source for log entry
-        [Parameter(Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false,
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Thread source")]
+        [Parameter()]
         [string]
         $Thread,
 
         # Source file name and process ID
-        [Parameter(Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false,
-            ValueFromRemainingArguments=$false,
-            HelpMessage="File source")]
+        [Parameter()]
         [String]
         $File
 	)
 
-    process {
+    Process {
             
         # Create log file if not exist
         If ((Test-Path $script:logFilePath -PathType Leaf) -eq $false) {
@@ -135,45 +115,26 @@ function Write-LogMessage {
     #>
 
     [CmdletBinding()]
-    param (
+
+    Param (
         
         # Message to log
-        [Parameter(
-            Mandatory,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Message to log")]
+        [Parameter()]
         [string]
         $Message,
 
         # Invocation object to process
-        [Parameter(
-             Mandatory,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Invocation object to process")]
+        [Parameter()]
         [System.Management.Automation.InvocationInfo]
         $Invocation,
 
         # Exception object to process
-        [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Exception object to process")]
+        [Parameter()]
         [System.Management.Automation.ErrorRecord]
         $Exception,
 
         # Severity of the log entry (Information, Warning, Error)
-        [Parameter(
-            Mandatory = $false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Severity of leg entry")]
+        [Parameter()]
         [ValidateSet('Information','Warning','Error')]
         [string]
         $Severity
@@ -274,7 +235,7 @@ function Write-LogMessage {
     }
 }
 
-Function Set-RegistryKeyValue {
+Function Invoke-SetRegKey {
     <#
         .Synopsis
         Creates or sets a registry key value
@@ -283,7 +244,7 @@ Function Set-RegistryKeyValue {
         Creates or sets a registry key value on existing registry key path
 
         .EXAMPLE
-        Set-RegistryKeyValue -Hive HKLM -Path 'Softare\Microsoft' -Name 'foo' -Value 'bar' -Type String
+        Invoke-SetRegKey -Hive HKLM -Path 'Softare\Microsoft' -Name 'foo' -Value 'bar' -Type String
 
         .INPUTS
         None
@@ -305,36 +266,22 @@ Function Set-RegistryKeyValue {
     #>
 
     [CmdletBinding()]
-    param (
+
+    Param (
         
         # Registry key hive
-        [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Registry key hive")]
+        [Parameter()]
         [ValidateSet('HKLM','HKCU','HKR','HKU')]
         [String]
         $Hive,
 
         # Registry key path
-        [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Registry key path")]
+        [Parameter()]
         [String]
         $Path,
 
         # Registry key name
-        [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Registry key name")]
+        [Parameter()]
         [String]
         $Name,
 
@@ -349,14 +296,9 @@ Function Set-RegistryKeyValue {
         $Value,
 
         # Registry key value type
-        [Parameter(
-            Mandatory=$false,
-            ValueFromPipeline=$false,
-            ValueFromPipelineByPropertyName=$false, 
-            ValueFromRemainingArguments=$false,
-            HelpMessage="Registry key value type")]
-        [String]
+        [Parameter()]
         [ValidateSet('String','ExpandString','Binary','DWord','Qword')]
+        [String]
         $Type
     )
 
@@ -365,6 +307,70 @@ Function Set-RegistryKeyValue {
             [void] (New-ItemProperty -Path "$($Hive):\$Path" -Name "$($Name)" -Value "$($Value)" -PropertyType $Type -Force -ErrorAction Stop)
         } catch {
             Write-LogMessage -Message "Failed to set registry key value" -Invocation $MyInvocation -Exception $_ -Severity Error
+        }
+    }
+}
+
+Function Invoke-StartProcess {
+    <#
+        .Synopsis
+        {todo}
+
+        .DESCRIPTION
+        {todo}
+
+        .EXAMPLE
+        {todo}
+
+        .INPUTS
+        {todo}
+
+        .OUTPUTS
+        {todo}
+
+        .NOTES
+        {todo}
+        
+        .COMPONENT
+        {todo}
+
+        .ROLE
+        {todo}
+        
+        .FUNCTIONALITY
+        {todo}
+    #>
+
+    [CmdletBinding()]    
+
+	Param (
+        [Parameter()]
+		[String]
+        $Path,
+
+        [Parameter()]
+        [String]
+        $Parameters
+	)
+
+    Process {
+
+        try {
+            # Create empty objects
+            [System.Diagnostics.ProcessStartInfo] $local:process = [System.Diagnostics.ProcessStartInfo]::Empty
+            [System.Diagnostics.Process] $executeProcess = [System.Diagnostics.Process]::Empty
+
+            # Build process start info object
+            $local:process = New-Object -TypeName System.Diagnostics.ProcessStartInfo
+            $local:process.FileName = $Path
+            $local:process.Arguments = $Parameters
+            $local:process.UseShellExecute = $false
+
+            # Execute process
+            $local:executeProcess = [System.Diagnostics.Process]::Start($local:process)
+            $local:executeProcess.WaitForExit()
+        } catch {
+            Write-LogMessage -Message "Failed to execute: $Path" -Invocation $MyInvocation -Exception $_ -Severity Error
         }
     }
 }
